@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ajarin — AI Authoring Tool for Modern Teachers</title>
+    <meta name="description" content="AI platform empowering teachers to design lesson plans and assessments in seconds.">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="icon" href="img/logo.png" type="image/png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* ─────────────────────────────────────
+           DESIGN TOKENS & RESET
+        ───────────────────────────────────── */
+        :root {
+            --navy:   #1e293b; --navy-d: #0f172a; --teal:   #14b8a6;
+            --teal-d: #0f9689; --teal-l: #e6faf8; --white:  #ffffff;
+            --off:    #f8fafc; --border: #e2e8f0; --ink:    #0f172a;
+            --mid:    #334155; --muted:  #64748b; --faint:  #94a3b8;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { font-size: 16px; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--white); color: var(--mid); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+        a { text-decoration: none; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+        /* ─────────────────────────────────────
+           REVEAL ANIMATION
+        ───────────────────────────────────── */
+        .r { opacity: 0; transform: translateY(20px); transition: opacity .65s cubic-bezier(.22,1,.36,1), transform .65s cubic-bezier(.22,1,.36,1); }
+        .r.on { opacity: 1; transform: none; }
+
+        /* ─────────────────────────────────────
+           NAV
+        ───────────────────────────────────── */
+        #nav { position: fixed; inset: 0 0 auto; z-index: 100; height: 60px; transition: background .25s, border-color .25s, box-shadow .25s; border-bottom: 1px solid transparent; }
+        #nav.up { background: rgba(255,255,255,.95); border-bottom-color: var(--border); backdrop-filter: blur(12px); box-shadow: 0 1px 12px rgba(15,23,42,.06); }
+        .nav-c { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; height: 100%; display: flex; align-items: center; justify-content: space-between; }
+        .logo { display: flex; align-items: center; gap: .625rem; font-size: 1rem; font-weight: 800; color: var(--navy); letter-spacing: -.03em; }
+        .logo-box { width: 30px; height: 30px; border-radius: 8px; background: var(--navy); display: flex; align-items: center; justify-content: center; }
+        .logo-box img { width: 18px; height: 18px; object-fit: contain; filter: brightness(0) invert(1); }
+        .nav-links { display: flex; gap: .125rem; }
+        .nav-links a { padding: .375rem .875rem; font-size: .875rem; font-weight: 500; color: var(--muted); border-radius: 7px; transition: color .15s, background .15s; }
+        .nav-links a:hover { color: var(--ink); background: var(--off); }
+        .nav-right { display: flex; align-items: center; gap: .5rem; }
+        .n-ghost { display: flex; align-items: center; gap: .4rem; padding: .4rem .875rem; font-size: .8125rem; font-weight: 600; color: var(--mid); background: transparent; border: 1px solid var(--border); border-radius: 8px; transition: border-color .15s, color .15s, box-shadow .15s; }
+        .n-ghost:hover { border-color: #cbd5e1; color: var(--ink); box-shadow: 0 1px 6px rgba(0,0,0,.06); }
+        .n-solid { display: flex; align-items: center; gap: .4rem; padding: .4rem 1rem; font-size: .8125rem; font-weight: 700; color: var(--white); background: var(--navy); border-radius: 8px; box-shadow: 0 1px 8px rgba(15,23,42,.22); transition: background .15s, box-shadow .15s, transform .12s; }
+        .n-solid:hover { background: var(--navy-d); box-shadow: 0 4px 16px rgba(15,23,42,.3); transform: translateY(-1px); }
+        @media (max-width:640px) { .nav-links, .n-ghost { display: none; } }
+
+        /* ─────────────────────────────────────
+           HERO
+        ───────────────────────────────────── */
+        .hero { padding: 140px 1.5rem 100px; text-align: center; background: var(--white); position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px); background-size: 48px 48px; opacity: .35; mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent); pointer-events: none; }
+        .hero::after { content: ''; position: absolute; top: -120px; left: 50%; transform: translateX(-50%); width: 600px; height: 400px; border-radius: 9999px; background: radial-gradient(ellipse, rgba(20,184,166,.12) 0%, transparent 70%); pointer-events: none; }
+        .hero-inner { position: relative; z-index: 2; max-width: 780px; margin: 0 auto; }
+        .hero-pill { display: inline-flex; align-items: center; gap: .5rem; padding: .3125rem .875rem; border-radius: 999px; border: 1px solid rgba(20,184,166,.3); background: rgba(20,184,166,.06); font-size: .6875rem; font-weight: 700; color: var(--teal-d); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 2rem; }
+        .pill-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); animation: pulse 2s ease-in-out infinite; }
+        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+        .hero-h1 { font-size: clamp(2.75rem, 7vw, 5.5rem); font-weight: 900; color: var(--ink); letter-spacing: -.04em; line-height: 1.0; margin-bottom: 1.5rem; }
+        .hero-h1 .accent { position: relative; display: inline-block; color: var(--teal); }
+        .hero-sub { font-size: 1.125rem; line-height: 1.75; color: var(--muted); max-width: 520px; margin: 0 auto 2.5rem; font-weight: 400; }
+        .hero-acts { display: flex; align-items: center; justify-content: center; gap: .75rem; flex-wrap: wrap; margin-bottom: 3.5rem; }
+        .btn-main { display: inline-flex; align-items: center; gap: .5rem; padding: .875rem 2rem; font-size: 1rem; font-weight: 700; color: var(--white); background: var(--navy); border-radius: 10px; box-shadow: 0 4px 20px rgba(15,23,42,.25); transition: background .15s, box-shadow .15s, transform .12s; }
+        .btn-main:hover { background: var(--navy-d); box-shadow: 0 8px 28px rgba(15,23,42,.35); transform: translateY(-2px); }
+        .btn-goog { display: inline-flex; align-items: center; gap: .5rem; padding: .875rem 1.75rem; font-size: .9375rem; font-weight: 600; color: var(--mid); background: var(--white); border: 1.5px solid var(--border); border-radius: 10px; box-shadow: 0 1px 6px rgba(0,0,0,.06); transition: border-color .15s, box-shadow .15s, transform .12s; }
+        .btn-goog:hover { border-color: #cbd5e1; box-shadow: 0 4px 14px rgba(0,0,0,.1); transform: translateY(-2px); }
+        .hero-stats { display: flex; align-items: center; justify-content: center; gap: 2rem; flex-wrap: wrap; }
+        .stat { display: flex; align-items: center; gap: .5rem; font-size: .8125rem; color: var(--faint); font-weight: 500; }
+        .stat i { font-size: .6875rem; color: var(--teal); }
+
+        /* ─────────────────────────────────────
+           PRODUCT SHOWCASE — WINDOW FRAME
+        ───────────────────────────────────── */
+        .showcase { padding: 0 1.5rem 80px; background: var(--white); }
+        .showcase-c { max-width: 960px; margin: 0 auto; }
+        .window { background: var(--navy); border-radius: 18px; overflow: hidden; box-shadow: 0 0 0 1px rgba(255,255,255,.06), 0 32px 64px rgba(15,23,42,.2), 0 8px 16px rgba(15,23,42,.12); }
+        .window-bar { background: rgba(255,255,255,.04); border-bottom: 1px solid rgba(255,255,255,.06); padding: .875rem 1.25rem; display: flex; align-items: center; gap: 1rem; }
+        .w-dots { display: flex; gap: 6px; }
+        .w-dot { width: 11px; height: 11px; border-radius: 50%; }
+        .w-url { flex: 1; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08); border-radius: 6px; padding: .3125rem .75rem; font-size: .6875rem; color: rgba(255,255,255,.3); font-family: 'Inter', monospace; }
+        .w-badge { font-size: .6rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--teal); background: rgba(20,184,166,.12); border: 1px solid rgba(20,184,166,.2); border-radius: 999px; padding: .1875rem .625rem; }
+        .window-body { display: grid; grid-template-columns: 220px 1fr; }
+        @media (max-width: 640px) { .window-body { grid-template-columns: 1fr; } }
+        .w-sidebar { border-right: 1px solid rgba(255,255,255,.06); padding: 1.25rem 0; }
+        .ws-header { padding: 0 1rem .875rem; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: .875rem; }
+        .ws-brand { display: flex; align-items: center; gap: .5rem; }
+        .ws-brand-icon { width: 24px; height: 24px; border-radius: 6px; background: var(--teal); display: flex; align-items: center; justify-content: center; }
+        .ws-brand-icon img { width: 14px; height: 14px; object-fit: contain; filter: brightness(0) invert(1); }
+        .ws-brand-name { font-size: .8125rem; font-weight: 700; color: #fff; letter-spacing: -.02em; }
+        .ws-brand-sub { font-size: .5rem; color: rgba(255,255,255,.3); margin-top: 1px; }
+        .ws-section { padding: 0 .75rem; margin-bottom: .875rem; }
+        .ws-label { font-size: .55rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.25); padding: 0 .375rem; margin-bottom: .375rem; }
+        .ws-item { display: flex; align-items: center; gap: .5rem; padding: .4375rem .5rem; border-radius: 7px; font-size: .6875rem; font-weight: 500; color: rgba(255,255,255,.45); transition: background .15s, color .15s; cursor: pointer; }
+        .ws-item:hover { background: rgba(255,255,255,.06); color: rgba(255,255,255,.7); }
+        .ws-item.active { background: rgba(255,255,255,.08); color: rgba(255,255,255,.85); }
+        .ws-item i { font-size: .625rem; width: 14px; text-align: center; opacity: .6; }
+        .ws-item.active i { opacity: 1; color: var(--teal); }
+        .w-main { padding: 1.5rem; }
+        .w-greeting { font-size: .875rem; font-weight: 700; color: #fff; margin-bottom: .25rem; }
+        .w-sub { font-size: .6875rem; color: rgba(255,255,255,.35); margin-bottom: 1.25rem; }
+        .w-section-title { font-size: .55rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.25); margin-bottom: .75rem; }
+        .w-chatbot { background: linear-gradient(140deg, #1a3040, #0f2030); border: 1px solid rgba(20,184,166,.2); border-radius: 12px; padding: .875rem 1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: .75rem; cursor: pointer; transition: border-color .2s; }
+        .w-chatbot:hover { border-color: rgba(20,184,166,.4); }
+        .w-ci { width: 34px; height: 34px; border-radius: 9px; background: rgba(20,184,166,.15); display: flex; align-items: center; justify-content: center; color: var(--teal); font-size: .875rem; flex-shrink: 0; }
+        .w-cname { font-size: .8125rem; font-weight: 700; color: #fff; }
+        .w-cdesc { font-size: .5625rem; color: rgba(255,255,255,.35); margin-top: 1px; }
+        .w-cbadge { margin-left: auto; font-size: .55rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--teal); background: rgba(20,184,166,.12); border: 1px solid rgba(20,184,166,.22); border-radius: 999px; padding: .1875rem .5rem; }
+        .w-tools { display: grid; grid-template-columns: repeat(4, 1fr); gap: .4375rem; }
+        @media (max-width: 640px) { .w-tools { grid-template-columns: repeat(2, 1fr); } }
+        .w-tool { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06); border-radius: 8px; padding: .625rem .5rem; text-align: center; cursor: pointer; transition: background .15s, border-color .15s; }
+        .w-tool:hover { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.1); }
+        .w-tool-icon { font-size: .75rem; margin-bottom: .25rem; }
+        .w-tool-name { font-size: .55rem; font-weight: 600; color: rgba(255,255,255,.55); }
+
+        /* ─────────────────────────────────────
+           FEATURE STRIPS
+        ───────────────────────────────────── */
+        .features { padding: 80px 1.5rem; background: var(--off); border-top: 1px solid var(--border); }
+        .features-c { max-width: 1100px; margin: 0 auto; }
+        .f-header { text-align: center; margin-bottom: 4rem; }
+        .f-kicker { display: inline-block; font-size: .6875rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--teal-d); margin-bottom: .875rem; }
+        .f-h2 { font-size: clamp(1.875rem, 4vw, 2.75rem); font-weight: 800; color: var(--ink); letter-spacing: -.035em; line-height: 1.1; margin-bottom: .875rem; }
+        .f-sub { font-size: 1rem; color: var(--muted); max-width: 420px; margin: 0 auto; line-height: 1.7; }
+        .f-list { display: flex; flex-direction: column; gap: 1px; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+        .f-item { background: var(--white); display: grid; grid-template-columns: 56px 1fr auto; align-items: center; gap: 1.25rem; padding: 1.25rem 1.5rem; text-decoration: none; transition: background .15s; position: relative; }
+        .f-item:hover { background: #fcfdfe; }
+        .f-item:hover .f-arrow { opacity: 1; transform: translate(1px,-1px); }
+        .f-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+        .f-name { font-size: .9375rem; font-weight: 700; color: var(--ink); margin-bottom: .25rem; letter-spacing: -.015em; }
+        .f-desc { font-size: .8125rem; color: var(--muted); line-height: 1.5; }
+        .f-arrow { width: 30px; height: 30px; border-radius: 8px; background: var(--off); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: .5625rem; color: var(--faint); opacity: 0; transition: opacity .15s, transform .15s; flex-shrink: 0; }
+        .f-item-hero { background: var(--navy); grid-template-columns: 56px 1fr 200px; padding: 1.5rem; }
+        @media (max-width: 640px) { .f-item-hero { grid-template-columns: 56px 1fr; } .f-chat-preview { display: none !important; } }
+        .f-item-hero:hover { background: #1a2a3e; }
+        .f-item-hero .f-name { color: #fff; font-size: 1rem; }
+        .f-item-hero .f-desc { color: rgba(255,255,255,.45); }
+        .f-item-hero .f-arrow { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.08); color: rgba(255,255,255,.35); opacity: 1; }
+        .f-item-hero:hover .f-arrow { background: rgba(20,184,166,.15); border-color: rgba(20,184,166,.25); color: var(--teal); transform: translate(1px,-1px); }
+        .f-hero-badge { display: inline-flex; align-items: center; gap: .3rem; font-size: .6rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--teal); background: rgba(20,184,166,.12); border: 1px solid rgba(20,184,166,.22); border-radius: 999px; padding: .1875rem .5rem; margin-bottom: .5rem; }
+        .f-icon-hero { background: rgba(20,184,166,.15); color: var(--teal); }
+        .f-chat-preview { display: flex; flex-direction: column; gap: .5rem; }
+        .fchat { padding: .5rem .75rem; font-size: .6875rem; line-height: 1.55; border-radius: 10px; max-width: 190px; }
+        .fchat-ai { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.08); color: rgba(255,255,255,.65); border-radius: 10px 10px 10px 3px; }
+        .fchat-u { background: rgba(20,184,166,.15); border: 1px solid rgba(20,184,166,.2); color: rgba(255,255,255,.8); border-radius: 10px 10px 3px 10px; align-self: flex-end; }
+        .typing { display: flex; align-items: center; gap: .3rem; }
+        .td { width: 4px; height: 4px; border-radius: 50%; background: var(--teal); animation: pulse 1.4s ease-in-out infinite; }
+        .td:nth-child(2) { animation-delay: .2s; }
+        .td:nth-child(3) { animation-delay: .4s; }
+
+        /* ─────────────────────────────────────
+           HOW IT WORKS & PROOF & CTA
+        ───────────────────────────────────── */
+        .hiw { padding: 80px 1.5rem; background: var(--white); border-top: 1px solid var(--border); }
+        .hiw-c { max-width: 1100px; margin: 0 auto; }
+        .hiw-top { text-align: center; margin-bottom: 3.5rem; }
+        .steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+        @media (max-width: 640px) { .steps { grid-template-columns: 1fr; } }
+        .step { background: var(--white); padding: 2.25rem 2rem; position: relative; transition: background .2s; }
+        .step:hover { background: #fdfdfe; }
+        .step-n { font-size: 5rem; font-weight: 900; line-height: 1; color: var(--off); position: absolute; bottom: 1rem; right: 1.25rem; letter-spacing: -.06em; pointer-events: none; transition: color .2s; }
+        .step:hover .step-n { color: var(--teal-l); }
+        .step-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1rem; margin-bottom: 1.25rem; }
+        .step-title { font-size: .9375rem; font-weight: 700; color: var(--ink); margin-bottom: .5rem; letter-spacing: -.015em; }
+        .step-desc { font-size: .8125rem; color: var(--muted); line-height: 1.7; }
+        .step-foot { display: flex; align-items: center; gap: .5rem; margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--border); font-size: .6875rem; color: var(--faint); font-weight: 500; }
+        .step-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+        .proof { padding: 60px 1.5rem; background: var(--navy); }
+        .proof-c { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; }
+        @media (max-width: 640px) { .proof-c { grid-template-columns: 1fr; } .proof-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,.06); } .proof-item:last-child { border-bottom: none; } }
+        .proof-item { padding: 2rem; text-align: center; border-right: 1px solid rgba(255,255,255,.06); }
+        .proof-item:last-child { border-right: none; }
+        .proof-num { font-size: 2.75rem; font-weight: 900; color: var(--white); letter-spacing: -.04em; line-height: 1; }
+        .proof-num span { color: var(--teal); }
+        .proof-label { font-size: .8125rem; color: rgba(255,255,255,.35); margin-top: .375rem; }
+        .cta { padding: 80px 1.5rem; background: var(--off); border-top: 1px solid var(--border); }
+        .cta-c { max-width: 640px; margin: 0 auto; text-align: center; }
+        .cta-kicker { font-size: .6875rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--teal-d); margin-bottom: 1.25rem; }
+        .cta-h2 { font-size: clamp(2rem, 5vw, 3.25rem); font-weight: 900; color: var(--ink); letter-spacing: -.04em; line-height: 1.05; margin-bottom: 1rem; }
+        .cta-sub { font-size: 1rem; color: var(--muted); margin-bottom: 2.25rem; line-height: 1.7; }
+        .cta-acts { display: flex; align-items: center; justify-content: center; gap: .75rem; flex-wrap: wrap; }
+        .btn-cta { display: inline-flex; align-items: center; gap: .625rem; padding: 1rem 2.25rem; font-size: 1rem; font-weight: 700; color: var(--white); background: var(--navy); border-radius: 12px; box-shadow: 0 4px 20px rgba(15,23,42,.22); transition: background .15s, box-shadow .15s, transform .12s; }
+        .btn-cta:hover { background: var(--navy-d); box-shadow: 0 8px 28px rgba(15,23,42,.32); transform: translateY(-2px); }
+        .cta-note { font-size: .75rem; color: var(--faint); margin-top: 1rem; }
+
+        /* ─────────────────────────────────────
+           FOOTER
+        ───────────────────────────────────── */
+        .footer { background: var(--navy-d); padding: 1.75rem 1.5rem; }
+        .footer-c { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; }
+        .footer-logo { display: flex; align-items: center; gap: .5rem; color: rgba(255,255,255,.5); font-size: .9rem; font-weight: 700; letter-spacing: -.02em; }
+        .footer-logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); }
+        .footer-copy { font-size: .75rem; color: rgba(255,255,255,.22); }
+        .footer-nav { display: flex; gap: .25rem; }
+        .footer-a { padding: .3rem .65rem; font-size: .75rem; color: rgba(255,255,255,.28); border-radius: 6px; transition: color .15s, background .15s; }
+        .footer-a:hover { color: rgba(255,255,255,.6); background: rgba(255,255,255,.05); }
+    </style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav id="nav">
+    <div class="nav-c">
+        <a href="#" class="logo">
+            <div class="logo-box"><img src="img/logo.png" alt="Ajarin" onerror="this.style.display='none'"></div>
+            Ajarin
+        </a>
+        <div class="nav-links">
+            <a href="#fitur">Features</a>
+            <a href="#cara-kerja">How it Works</a>
+        </div>
+        <div class="nav-right">
+            <a href="#" class="n-ghost">
+                <svg width="14" height="14" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                Sign In
+            </a>
+            <a href="#" class="n-solid" onclick="alert('Demo Notice: The backend application is currently in closed beta testing for GESAwards evaluation.')">
+                Get Started for Free <i class="fas fa-arrow-right" style="font-size:.6rem;"></i>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero" id="hero">
+    <div class="hero-inner">
+        <div class="hero-pill r">
+            <span class="pill-dot"></span>
+            The Dedicated AI Assistant for Teachers
+        </div>
+        <h1 class="hero-h1 r" style="transition-delay:.08s;">
+            Teach Freely.<br>
+            Documents <span class="accent">Handled.</span>
+        </h1>
+        <p class="hero-sub r" style="transition-delay:.16s;">
+            Create Lesson Plans, HOTS Assessments, and 8 other documents in seconds—not hours. Powered by AI, free forever.
+        </p>
+        <div class="hero-acts r" style="transition-delay:.24s;">
+            <a href="#" class="btn-main" onclick="alert('Demo Notice: Please contact the lead researcher for full backend access.')">
+                Start Now — It's Free
+                <i class="fas fa-arrow-right" style="font-size:.75rem;"></i>
+            </a>
+            <a href="#" class="btn-goog" onclick="alert('Demo Notice: Google Authentication is secured on the production server.')">
+                <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                Continue with Google
+            </a>
+        </div>
+        <div class="hero-stats r" style="transition-delay:.38s;">
+            <span class="stat"><i class="fas fa-shield-alt"></i> Secure &amp; Private</span>
+            <span class="stat" style="color:var(--border);">|</span>
+            <span class="stat"><i class="fas fa-bolt"></i> Results in Seconds</span>
+            <span class="stat" style="color:var(--border);">|</span>
+            <span class="stat"><i class="fas fa-graduation-cap"></i> Merdeka Curriculum Ready</span>
+            <span class="stat" style="color:var(--border);">|</span>
+            <span class="stat"><i class="fas fa-file-word"></i> DOCX Export</span>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ PRODUCT SHOWCASE ═══ -->
+<section class="showcase">
+    <div class="showcase-c">
+        <div class="window r">
+            <div class="window-bar">
+                <div class="w-dots">
+                    <div class="w-dot" style="background:#ff5f57;"></div>
+                    <div class="w-dot" style="background:#febc2e;"></div>
+                    <div class="w-dot" style="background:#28c840;"></div>
+                </div>
+                <div class="w-url">ajarin.id/dashboard</div>
+                <div class="w-badge">AI Active</div>
+            </div>
+            <div class="window-body">
+                <div class="w-sidebar">
+                    <div class="ws-header">
+                        <div class="ws-brand">
+                            <div class="ws-brand-icon"><img src="img/logo.png" alt="" onerror="this.style.display='none'"></div>
+                            <div>
+                                <div class="ws-brand-name">Ajarin</div>
+                                <div class="ws-brand-sub">AI Teacher Assistant</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ws-section">
+                        <div class="ws-label">Main Menu</div>
+                        <div class="ws-item active"><i class="fas fa-th-large"></i> Dashboard</div>
+                        <div class="ws-item"><i class="fas fa-comments"></i> AI Chatbot</div>
+                        <div class="ws-item"><i class="fas fa-folder"></i> Saved Content</div>
+                    </div>
+                </div>
+                <div class="w-main">
+                    <div class="w-greeting">Good Morning, Mr. Budi! ☀️</div>
+                    <div class="w-sub">Select an AI tool to start creating your instructional materials.</div>
+                    <div class="w-section-title">Quick Access</div>
+                    <div class="w-chatbot">
+                        <div class="w-ci"><i class="fas fa-comments"></i></div>
+                        <div>
+                            <div class="w-cname">AI Chatbot</div>
+                            <div class="w-cdesc">Interactive AI assistant</div>
+                        </div>
+                        <div class="w-cbadge">✦ Popular</div>
+                    </div>
+                    <div class="w-section-title" style="margin-top:1rem;">All Tools</div>
+                    <div class="w-tools">
+                        <div class="w-tool"><div class="w-tool-icon" style="color:#10b981;"><i class="fas fa-chalkboard-teacher"></i></div><div class="w-tool-name">Lesson Plans</div></div>
+                        <div class="w-tool"><div class="w-tool-icon" style="color:#f97316;"><i class="fas fa-file-signature"></i></div><div class="w-tool-name">HOTS Quizzes</div></div>
+                        <div class="w-tool"><div class="w-tool-icon" style="color:#8b5cf6;"><i class="fas fa-book-open"></i></div><div class="w-tool-name">Study Materials</div></div>
+                        <div class="w-tool"><div class="w-tool-icon" style="color:#6366f1;"><i class="fas fa-table"></i></div><div class="w-tool-name">Rubrics</div></div>
+                        <div class="w-tool"><div class="w-tool-icon" style="color:#06b6d4;"><i class="fas fa-project-diagram"></i></div><div class="w-tool-name">Objectives</div></div>
+                        <div class="w-tool"><div class="w-tool-icon" style="color:#ec4899;"><i class="fas fa-users-cog"></i></div><div class="w-tool-name">Differentiation</div></div>
+                        <div class="w-tool"><div class="w-tool-icon" style="color:var(--teal);"><i class="fas fa-calendar-day"></i></div><div class="w-tool-name">Daily Agenda</div></div>
+                        <div class="w-tool"><div class="w-tool-icon" style="color:#f43f5e;"><i class="fas fa-pen-fancy"></i></div><div class="w-tool-name">Reflections</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ PROOF NUMBERS ═══ -->
+<div class="proof">
+    <div class="proof-c r">
+        <div class="proof-item"><div class="proof-num">10<span>+</span></div><div class="proof-label">AI tools in one platform</div></div>
+        <div class="proof-item"><div class="proof-num"><span>&lt;</span>30<span>s</span></div><div class="proof-label">Average form completion time</div></div>
+        <div class="proof-item"><div class="proof-num">100<span>%</span></div><div class="proof-label">Free, no credit card required</div></div>
+    </div>
+</div>
+
+<!-- ═══ FEATURES LIST ═══ -->
+<section class="features" id="fitur">
+    <div class="features-c">
+        <div class="f-header r">
+            <div class="f-kicker">10 Tools, One Platform</div>
+            <h2 class="f-h2">Everything a Teacher Needs.</h2>
+            <p class="f-sub">From lesson plans to reflection journals—one platform for the entire teaching ecosystem.</p>
+        </div>
+        <div class="f-list r" style="transition-delay:.08s;">
+            <!-- 1. Chatbot -->
+            <a href="#" class="f-item f-item-hero">
+                <div class="f-icon f-icon-hero"><i class="fas fa-comments"></i></div>
+                <div class="f-text">
+                    <div class="f-hero-badge">✦ Most Popular</div>
+                    <div class="f-name">Educator AI Chatbot</div>
+                    <div class="f-desc">Your smart virtual assistant—ask anything about teaching strategies, ice-breaking games, materials, and more.</div>
+                </div>
+                <div class="f-chat-preview">
+                    <div class="fchat fchat-ai">Create an ice-breaking game... 🎯</div>
+                    <div class="fchat fchat-u"><div class="typing" style="margin-bottom:3px;"><div class="td"></div><div class="td"></div><div class="td"></div></div>Sure! Here are 3 fun ideas...</div>
+                </div>
+                <div class="f-arrow"><i class="fas fa-arrow-up-right"></i></div>
+            </a>
+            <!-- 2. Lesson Plans -->
+            <a href="#" class="f-item r" style="transition-delay:.1s;"><div class="f-icon" style="background:#ecfdf5; color:#10b981;"><i class="fas fa-chalkboard-teacher"></i></div><div class="f-text"><div class="f-name">Lesson Plans</div><div class="f-desc">Design structured lesson plans exclusively aligned with the Indonesian Merdeka Curriculum standards.</div></div><div class="f-arrow"><i class="fas fa-arrow-up-right"></i></div></a>
+            <!-- 3. HOTS Quizzes -->
+            <a href="#" class="f-item r" style="transition-delay:.13s;"><div class="f-icon" style="background:#fff7ed; color:#f97316;"><i class="fas fa-file-signature"></i></div><div class="f-text"><div class="f-name">HOTS Assessments</div><div class="f-desc">Generate multiple-choice and essay questions from LOTS to HOTS, complete with answer keys and rubrics.</div></div><div class="f-arrow"><i class="fas fa-arrow-up-right"></i></div></a>
+            <!-- 4. Study Materials -->
+            <a href="#" class="f-item r" style="transition-delay:.15s;"><div class="f-icon" style="background:#f5f3ff; color:#8b5cf6;"><i class="fas fa-book-open"></i></div><div class="f-text"><div class="f-name">Study Materials</div><div class="f-desc">Compile comprehensive, ready-to-use learning materials and summaries with a single click.</div></div><div class="f-arrow"><i class="fas fa-arrow-up-right"></i></div></a>
+            <!-- 5. Rubrics -->
+            <a href="#" class="f-item r" style="transition-delay:.17s;"><div class="f-icon" style="background:#eef2ff; color:#6366f1;"><i class="fas fa-table"></i></div><div class="f-text"><div class="f-name">Evaluation Rubrics</div><div class="f-desc">Standardized, print-ready assessment matrix criteria for any type of assignment or project.</div></div><div class="f-arrow"><i class="fas fa-arrow-up-right"></i></div></a>
+            <!-- 6. CP to ATP -->
+            <a href="#" class="f-item r" style="transition-delay:.19s;"><div class="f-icon" style="background:#ecfeff; color:#06b6d4;"><i class="fas fa-project-diagram"></i></div><div class="f-text"><div class="f-name">Learning Objectives (CP &rarr; ATP)</div><div class="f-desc">Break down broad Learning Outcomes into structured, step-by-step Learning Objective Sequences.</div></div><div class="f-arrow"><i class="fas fa-arrow-up-right"></i></div></a>
+            <!-- 7. Differentiation -->
+            <a href="#" class="f-item r" style="transition-delay:.21s;"><div class="f-icon" style="background:#fdf2f8; color:#ec4899;"><i class="fas fa-users-cog"></i></div><div class="f-text"><div class="f-name">Differentiated Learning</div><div class="f-desc">Tailor teaching strategies based on student profiles and individual learning needs seamlessly.</div></div><div class="f-arrow"><i class="fas fa-arrow-up-right"></i></div></a>
+            <!-- 8. Daily Agenda -->
+            <a href="#" class="f-item r" style="transition-delay:.23s;"><div class="f-icon" style="background:#f0fdfa; color:#14b8a6;"><i class="fas fa-calendar-day"></i></div><div class="f-text"><div class="f-name">Daily Agenda</div><div class="f-desc">Transform brief class notes into a neatly structured and formal daily teaching journal.</div></div><div class="f-arrow"><i class="fas fa-arrow-up-right"></i></div></a>
+            <!-- 9. Reflections -->
+            <a href="#" class="f-item r" style="transition-delay:.25s;"><div class="f-icon" style="background:#fff1f2; color:#f43f5e;"><i class="fas fa-pen-fancy"></i></div><div class="f-text"><div class="f-name">Learning Reflections</div><div class="f-desc">Generate Teacher Reflection Documents based on the Deep Learning cycle: Understanding, Applying, and Reflecting.</div></div><div class="f-arrow"><i class="fas fa-arrow-up-right"></i></div></a>
+            <!-- 10. Kisi-kisi -->
+            <a href="#" class="f-item r" style="transition-delay:.27s;"><div class="f-icon" style="background:#fffbeb; color:#d97706;"><i class="fas fa-th"></i></div><div class="f-text"><div class="f-name">Assessment Blueprints</div><div class="f-desc">Nationally standardized exam blueprint matrices, ready for immediate use and distribution.</div></div><div class="f-arrow"><i class="fas fa-arrow-up-right"></i></div></a>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ HOW IT WORKS ═══ -->
+<section class="hiw" id="cara-kerja">
+    <div class="hiw-c">
+        <div class="hiw-top r">
+            <div class="f-kicker">How It Works</div>
+            <h2 class="f-h2">Three Steps to Done.</h2>
+            <p class="f-sub">From form to print-ready document in seconds.</p>
+        </div>
+        <div class="steps r" style="transition-delay:.08s;">
+            <div class="step"><div class="step-n">01</div><div class="step-icon" style="background:var(--off);"><i class="fas fa-sliders-h" style="color:var(--muted);"></i></div><div class="step-title">Select Tool &amp; Fill Form</div><div class="step-desc">Specify the subject, topic, grade level, and other parameters through a simple form.</div><div class="step-foot"><div class="step-dot" style="background:var(--border);"></div>~30 seconds to fill</div></div>
+            <div class="step"><div class="step-n" style="color:var(--teal-l);">02</div><div class="step-icon" style="background:var(--teal-l);"><i class="fas fa-wand-magic-sparkles" style="color:var(--teal-d);"></i></div><div class="step-title" style="color:var(--teal-d);">AI Processing</div><div class="step-desc">The AI engine automatically assembles the document adhering to national curriculum standards.</div><div class="step-foot"><div style="display:flex;gap:3px;"><div class="step-dot" style="background:var(--teal);animation:pulse 1.4s infinite;"></div><div class="step-dot" style="background:#3b82f6;animation:pulse 1.4s .25s infinite;"></div><div class="step-dot" style="background:#8b5cf6;animation:pulse 1.4s .5s infinite;"></div></div>Instant generation</div></div>
+            <div class="step"><div class="step-n">03</div><div class="step-icon" style="background:var(--off);"><i class="fas fa-file-arrow-down" style="color:var(--muted);"></i></div><div class="step-title">Export &amp; Use</div><div class="step-desc">Download in print-ready DOCX format. No reformatting needed—ready for the classroom.</div><div class="step-foot"><div class="step-dot" style="background:#10b981;"></div>Ready-to-use DOCX</div></div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ CTA ═══ -->
+<section class="cta">
+    <div class="cta-c r">
+        <div class="cta-kicker">Free Forever</div>
+        <h2 class="cta-h2">Ready to Try?</h2>
+        <p class="cta-sub">Join now and experience the difference. No credit card required—just your Google account.</p>
+        <div class="cta-acts">
+            <a href="#" class="btn-cta" onclick="alert('Demo Notice: Please contact the lead researcher for full backend access.')">
+                <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                Continue with Google — It's Free
+            </a>
+        </div>
+        <div class="cta-note">No credit card required &nbsp;·&nbsp; Google account is all you need</div>
+    </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="footer">
+    <div class="footer-c">
+        <div class="footer-logo"><div class="footer-logo-dot"></div> Ajarin</div>
+        <p class="footer-copy">&copy; 2026 Ajarin. All Rights Reserved.</p>
+        <nav class="footer-nav">
+            <a href="#fitur" class="footer-a">Features</a>
+            <a href="#cara-kerja" class="footer-a">How it Works</a>
+        </nav>
+    </div>
+</footer>
+
+<!-- ═══ SCRIPTS ═══ -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => { nav.classList.toggle('up', window.scrollY > 16); }, { passive: true });
+        const obs = new IntersectionObserver((entries, ob) => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); ob.unobserve(e.target); } });
+        }, { rootMargin: '0px 0px -56px 0px', threshold: 0.07 });
+        document.querySelectorAll('.r').forEach(el => obs.observe(el));
+    });
+</script>
+</body>
+</html>
