@@ -42,8 +42,11 @@
         #nav.up { background: rgba(255,255,255,.95); border-bottom-color: var(--border); backdrop-filter: blur(12px); box-shadow: 0 1px 12px rgba(15,23,42,.06); }
         .nav-c { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; height: 100%; display: flex; align-items: center; justify-content: space-between; }
         .logo { display: flex; align-items: center; gap: .625rem; font-size: 1rem; font-weight: 800; color: var(--navy); letter-spacing: -.03em; }
-        .logo-box { width: 30px; height: 30px; border-radius: 8px; background: var(--navy); display: flex; align-items: center; justify-content: center; }
-        .logo-box img { width: 18px; height: 18px; object-fit: contain; filter: brightness(0) invert(1); }
+        
+        /* LOGO FIX 1: Navbar */
+        .logo-box { width: 32px; height: 32px; border-radius: 8px; background: transparent; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .logo-box img { width: 100%; height: 100%; object-fit: contain; }
+        
         .nav-links { display: flex; gap: .125rem; }
         .nav-links a { padding: .375rem .875rem; font-size: .875rem; font-weight: 500; color: var(--muted); border-radius: 7px; transition: color .15s, background .15s; }
         .nav-links a:hover { color: var(--ink); background: var(--off); }
@@ -92,8 +95,11 @@
         .w-sidebar { border-right: 1px solid rgba(255,255,255,.06); padding: 1.25rem 0; }
         .ws-header { padding: 0 1rem .875rem; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: .875rem; }
         .ws-brand { display: flex; align-items: center; gap: .5rem; }
-        .ws-brand-icon { width: 24px; height: 24px; border-radius: 6px; background: var(--teal); display: flex; align-items: center; justify-content: center; }
-        .ws-brand-icon img { width: 14px; height: 14px; object-fit: contain; filter: brightness(0) invert(1); }
+        
+        /* LOGO FIX 2: Sidebar Showcase */
+        .ws-brand-icon { width: 28px; height: 28px; border-radius: 6px; background: transparent; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .ws-brand-icon img { width: 100%; height: 100%; object-fit: contain; }
+        
         .ws-brand-name { font-size: .8125rem; font-weight: 700; color: #fff; letter-spacing: -.02em; }
         .ws-brand-sub { font-size: .5rem; color: rgba(255,255,255,.3); margin-top: 1px; }
         .ws-section { padding: 0 .75rem; margin-bottom: .875rem; }
@@ -205,7 +211,6 @@
 </head>
 <body>
 
-<!-- ═══ NAV ═══ -->
 <nav id="nav">
     <div class="nav-c">
         <a href="#" class="logo">
@@ -228,7 +233,6 @@
     </div>
 </nav>
 
-<!-- ═══ HERO ═══ -->
 <section class="hero" id="hero">
     <div class="hero-inner">
         <div class="hero-pill r">
@@ -264,7 +268,6 @@
     </div>
 </section>
 
-<!-- ═══ PRODUCT SHOWCASE ═══ -->
 <section class="showcase">
     <div class="showcase-c">
         <div class="window r">
@@ -324,7 +327,6 @@
     </div>
 </section>
 
-<!-- ═══ PROOF NUMBERS ═══ -->
 <div class="proof">
     <div class="proof-c r">
         <div class="proof-item"><div class="proof-num">10<span>+</span></div><div class="proof-label">AI tools in one platform</div></div>
@@ -333,7 +335,6 @@
     </div>
 </div>
 
-<!-- ═══ FEATURES LIST ═══ -->
 <section class="features" id="fitur">
     <div class="features-c">
         <div class="f-header r">
@@ -342,7 +343,6 @@
             <p class="f-sub">From lesson plans to reflection journals—one platform for the entire teaching ecosystem.</p>
         </div>
         <div class="f-list r" style="transition-delay:.08s;">
-            <!-- 1. Chatbot -->
             <a href="#" class="f-item f-item-hero">
                 <div class="f-icon f-icon-hero"><i class="fas fa-comments"></i></div>
                 <div class="f-text">
@@ -356,29 +356,19 @@
                 </div>
                 <div class="f-arrow"><i class="fas fa-arrow-up-right"></i></div>
             </a>
-            <!-- 2. Lesson Plans -->
             <a href="#" class="f-item r" style="transition-delay:.1s;"><div class="f-icon" style="background:#ecfdf5; color:#10b981;"><i class="fas fa-chalkboard-teacher"></i></div><div class="f-text"><div class="f-name">Lesson Plans</div><div class="f-desc">Design structured lesson plans exclusively aligned with the Indonesian Merdeka Curriculum standards.</div></div><div class="f-arrow"><i class="fas fa-arrow-up-right"></i></div></a>
-            <!-- 3. HOTS Quizzes -->
             <a href="#" class="f-item r" style="transition-delay:.13s;"><div class="f-icon" style="background:#fff7ed; color:#f97316;"><i class="fas fa-file-signature"></i></div><div class="f-text"><div class="f-name">HOTS Assessments</div><div class="f-desc">Generate multiple-choice and essay questions from LOTS to HOTS, complete with answer keys and rubrics.</div></div><div class="f-arrow"><i class="fas fa-arrow-up-right"></i></div></a>
-            <!-- 4. Study Materials -->
             <a href="#" class="f-item r" style="transition-delay:.15s;"><div class="f-icon" style="background:#f5f3ff; color:#8b5cf6;"><i class="fas fa-book-open"></i></div><div class="f-text"><div class="f-name">Study Materials</div><div class="f-desc">Compile comprehensive, ready-to-use learning materials and summaries with a single click.</div></div><div class="f-arrow"><i class="fas fa-arrow-up-right"></i></div></a>
-            <!-- 5. Rubrics -->
             <a href="#" class="f-item r" style="transition-delay:.17s;"><div class="f-icon" style="background:#eef2ff; color:#6366f1;"><i class="fas fa-table"></i></div><div class="f-text"><div class="f-name">Evaluation Rubrics</div><div class="f-desc">Standardized, print-ready assessment matrix criteria for any type of assignment or project.</div></div><div class="f-arrow"><i class="fas fa-arrow-up-right"></i></div></a>
-            <!-- 6. CP to ATP -->
             <a href="#" class="f-item r" style="transition-delay:.19s;"><div class="f-icon" style="background:#ecfeff; color:#06b6d4;"><i class="fas fa-project-diagram"></i></div><div class="f-text"><div class="f-name">Learning Objectives (CP &rarr; ATP)</div><div class="f-desc">Break down broad Learning Outcomes into structured, step-by-step Learning Objective Sequences.</div></div><div class="f-arrow"><i class="fas fa-arrow-up-right"></i></div></a>
-            <!-- 7. Differentiation -->
             <a href="#" class="f-item r" style="transition-delay:.21s;"><div class="f-icon" style="background:#fdf2f8; color:#ec4899;"><i class="fas fa-users-cog"></i></div><div class="f-text"><div class="f-name">Differentiated Learning</div><div class="f-desc">Tailor teaching strategies based on student profiles and individual learning needs seamlessly.</div></div><div class="f-arrow"><i class="fas fa-arrow-up-right"></i></div></a>
-            <!-- 8. Daily Agenda -->
             <a href="#" class="f-item r" style="transition-delay:.23s;"><div class="f-icon" style="background:#f0fdfa; color:#14b8a6;"><i class="fas fa-calendar-day"></i></div><div class="f-text"><div class="f-name">Daily Agenda</div><div class="f-desc">Transform brief class notes into a neatly structured and formal daily teaching journal.</div></div><div class="f-arrow"><i class="fas fa-arrow-up-right"></i></div></a>
-            <!-- 9. Reflections -->
             <a href="#" class="f-item r" style="transition-delay:.25s;"><div class="f-icon" style="background:#fff1f2; color:#f43f5e;"><i class="fas fa-pen-fancy"></i></div><div class="f-text"><div class="f-name">Learning Reflections</div><div class="f-desc">Generate Teacher Reflection Documents based on the Deep Learning cycle: Understanding, Applying, and Reflecting.</div></div><div class="f-arrow"><i class="fas fa-arrow-up-right"></i></div></a>
-            <!-- 10. Kisi-kisi -->
             <a href="#" class="f-item r" style="transition-delay:.27s;"><div class="f-icon" style="background:#fffbeb; color:#d97706;"><i class="fas fa-th"></i></div><div class="f-text"><div class="f-name">Assessment Blueprints</div><div class="f-desc">Nationally standardized exam blueprint matrices, ready for immediate use and distribution.</div></div><div class="f-arrow"><i class="fas fa-arrow-up-right"></i></div></a>
         </div>
     </div>
 </section>
 
-<!-- ═══ HOW IT WORKS ═══ -->
 <section class="hiw" id="cara-kerja">
     <div class="hiw-c">
         <div class="hiw-top r">
@@ -394,7 +384,6 @@
     </div>
 </section>
 
-<!-- ═══ CTA ═══ -->
 <section class="cta">
     <div class="cta-c r">
         <div class="cta-kicker">Free Forever</div>
@@ -410,7 +399,6 @@
     </div>
 </section>
 
-<!-- ═══ FOOTER ═══ -->
 <footer class="footer">
     <div class="footer-c">
         <div class="footer-logo"><div class="footer-logo-dot"></div> Ajarin</div>
@@ -422,7 +410,6 @@
     </div>
 </footer>
 
-<!-- ═══ SCRIPTS ═══ -->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const nav = document.getElementById('nav');
